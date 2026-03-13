@@ -38,12 +38,12 @@
                 <p class="hero-sub">Wave, sketch, and create glowing art — no pencils needed!</p>
 
                 <div class="hero-buttons">
-                    <button class="btn-primary" onclick="startApp()">
+                    <button class="btn-primary" id="btn-start">
                         <span class="btn-emoji">🎨</span>
                         Let's Draw!
                         <span class="btn-shine"></span>
                     </button>
-                    <button class="btn-secondary" onclick="showGuide()">
+                    <button class="btn-secondary" id="btn-guide">
                         <span class="btn-emoji">📖</span>
                         How to Play
                     </button>
@@ -62,7 +62,7 @@
     <!-- ===== HOW TO PLAY PAGE ===== -->
     <div id="guide-page" class="hidden">
         <div class="guide-wrapper">
-            <button class="guide-back" onclick="hideGuide()">
+            <button class="guide-back" id="btn-guide-back">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                 Back
             </button>
@@ -89,7 +89,7 @@
                     <p>Tap the <strong>color dots</strong> on the left side to change your drawing color.</p>
                 </div>
             </div>
-            <button class="btn-primary guide-start" onclick="startApp()">
+            <button class="btn-primary guide-start" id="btn-guide-start">
                 <span class="btn-emoji">🚀</span>
                 Start Drawing!
                 <span class="btn-shine"></span>
@@ -124,10 +124,10 @@
         </div>
 
         <div id="toolbar">
-            <button class="tool-btn" id="btn-theme" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
-            <button class="tool-btn" id="btn-clear" onclick="clearAllDrawings()" title="Clear All">🗑️</button>
-            <button class="tool-btn" id="btn-undo" onclick="undoDrawing()" title="Undo">↩️</button>
-            <button class="tool-btn" id="btn-home" onclick="goHome()" title="Home">🏠</button>
+            <button class="tool-btn" id="btn-theme" title="Toggle Theme">🌙</button>
+            <button class="tool-btn" id="btn-clear" title="Clear All">🗑️</button>
+            <button class="tool-btn" id="btn-undo" title="Undo">↩️</button>
+            <button class="tool-btn" id="btn-home" title="Home">🏠</button>
         </div>
 
         <div id="gesture-indicator"></div>

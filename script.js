@@ -31,10 +31,8 @@ function goHome() {
     homePage.classList.remove('hidden');
 }
 
-window.startApp = startApp;
-window.showGuide = showGuide;
-window.hideGuide = hideGuide;
-window.goHome = goHome;
+// function startApp(), etc. defined above...
+
 
 // ===== THEME =====
 let isDarkTheme = true;
@@ -50,7 +48,8 @@ function toggleTheme() {
     // Update draw page background
     drawPage.style.background = getCanvasBg();
 }
-window.toggleTheme = toggleTheme;
+
+
 
 // ===== HOMEPAGE PARTICLE CANVAS =====
 (function initParticles() {
@@ -153,7 +152,6 @@ function clearAllDrawings() {
     currentPath = null;
     showGesture('🗑️ All Clear!');
 }
-window.clearAllDrawings = clearAllDrawings;
 
 function undoDrawing() {
     if (drawings.length > 0) {
@@ -161,7 +159,7 @@ function undoDrawing() {
         showGesture('↩️ Undo!');
     }
 }
-window.undoDrawing = undoDrawing;
+
 
 function showGesture(text) {
     gestureIndicator.textContent = text;
@@ -820,3 +818,19 @@ function initHandTracking() {
     });
     camera.start();
 }
+
+// ===== EVENT LISTENERS =====
+document.addEventListener('DOMContentLoaded', () => {
+    // Navigation
+    document.getElementById('btn-start')?.addEventListener('click', startApp);
+    document.getElementById('btn-guide')?.addEventListener('click', showGuide);
+    document.getElementById('btn-guide-back')?.addEventListener('click', hideGuide);
+    document.getElementById('btn-guide-start')?.addEventListener('click', startApp);
+    document.getElementById('btn-home')?.addEventListener('click', goHome);
+
+    // Toolbar
+    document.getElementById('btn-theme')?.addEventListener('click', toggleTheme);
+    document.getElementById('btn-clear')?.addEventListener('click', clearAllDrawings);
+    document.getElementById('btn-undo')?.addEventListener('click', undoDrawing);
+});
+
