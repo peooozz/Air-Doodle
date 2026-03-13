@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Doodle — Draw in the Air! ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ===== HOME PAGE ===== -->
+    <div id="home-page">
+        <canvas id="particle-canvas"></canvas>
+
+        <div class="home-wrapper">
+            <!-- Decorative blobs -->
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+
+            <div class="home-center">
+                <!-- Animated hand icon -->
+                <div class="hero-icon">
+                    <div class="hero-icon-ring"></div>
+                    <div class="hero-icon-ring ring-2"></div>
+                    <span class="hero-hand">✋</span>
+                </div>
+
+                <h1 class="hero-title">
+                    <span class="title-line-1">Air</span>
+                    <span class="title-line-2">Doodle</span>
+                </h1>
+
+                <p class="hero-tagline">Draw in the air with your hands ✨</p>
+                <p class="hero-sub">Wave, sketch, and create glowing art — no pencils needed!</p>
+
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="startApp()">
+                        <span class="btn-emoji">🎨</span>
+                        Let's Draw!
+                        <span class="btn-shine"></span>
+                    </button>
+                    <button class="btn-secondary" onclick="showGuide()">
+                        <span class="btn-emoji">📖</span>
+                        How to Play
+                    </button>
+                </div>
+
+                <div class="hero-badges">
+                    <div class="badge">☝️ <span>Draw</span></div>
+                    <div class="badge">✌️ <span>Hover</span></div>
+                    <div class="badge">🖐️ <span>Erase</span></div>
+                    <div class="badge">🤏 <span>Move</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HOW TO PLAY PAGE ===== -->
+    <div id="guide-page" class="hidden">
+        <div class="guide-wrapper">
+            <button class="guide-back" onclick="hideGuide()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back
+            </button>
+            <h2 class="guide-heading">How to Play</h2>
+            <div class="guide-grid">
+                <div class="guide-card gc-draw">
+                    <div class="gc-icon">☝️</div>
+                    <h3>Draw</h3>
+                    <p>Point your <strong>index finger up</strong> and move your hand to draw glowing lines.</p>
+                </div>
+                <div class="guide-card gc-erase">
+                    <div class="gc-icon">✌️</div>
+                    <h3>Hover</h3>
+                    <p>Hold up <strong>two fingers</strong> to move your cursor around without drawing.</p>
+                </div>
+                <div class="guide-card gc-move">
+                    <div class="gc-icon">🖐️</div>
+                    <h3>Erase</h3>
+                    <p>Hold up <strong>three fingers</strong> to activate the eraser and delete lines.</p>
+                </div>
+                <div class="guide-card gc-color">
+                    <div class="gc-icon">🎨</div>
+                    <h3>Colors</h3>
+                    <p>Tap the <strong>color dots</strong> on the left side to change your drawing color.</p>
+                </div>
+            </div>
+            <button class="btn-primary guide-start" onclick="startApp()">
+                <span class="btn-emoji">🚀</span>
+                Start Drawing!
+                <span class="btn-shine"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== DRAWING PAGE ===== -->
+    <div id="draw-page" class="hidden">
+        <div id="loading-screen">
+            <div class="loader-ring">
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+            </div>
+            <p class="loading-text">Starting camera magic...</p>
+        </div>
+
+        <video id="input_video" playsinline></video>
+        <canvas id="output_canvas"></canvas>
+
+        <div id="color-picker">
+            <div class="color-btn active" data-color="#FF3B3B" style="--c:#FF3B3B" title="Red"></div>
+            <div class="color-btn" data-color="#FF9F1C" style="--c:#FF9F1C" title="Orange"></div>
+            <div class="color-btn" data-color="#FFE03B" style="--c:#FFE03B" title="Yellow"></div>
+            <div class="color-btn" data-color="#2EC44B" style="--c:#2EC44B" title="Green"></div>
+            <div class="color-btn" data-color="#2BCBFF" style="--c:#2BCBFF" title="Cyan"></div>
+            <div class="color-btn" data-color="#5B7FFF" style="--c:#5B7FFF" title="Blue"></div>
+            <div class="color-btn" data-color="#C552FF" style="--c:#C552FF" title="Purple"></div>
+            <div class="color-btn" data-color="#FF6B9D" style="--c:#FF6B9D" title="Pink"></div>
+            <div class="color-btn" data-color="#FFFFFF" style="--c:#FFFFFF" title="White"></div>
+        </div>
+
+        <div id="toolbar">
+            <button class="tool-btn" id="btn-theme" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+            <button class="tool-btn" id="btn-clear" onclick="clearAllDrawings()" title="Clear All">🗑️</button>
+            <button class="tool-btn" id="btn-undo" onclick="undoDrawing()" title="Undo">↩️</button>
+            <button class="tool-btn" id="btn-home" onclick="goHome()" title="Home">🏠</button>
+        </div>
+
+        <div id="gesture-indicator"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
