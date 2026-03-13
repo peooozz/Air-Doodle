@@ -2,18 +2,33 @@
 const homePage = document.getElementById('home-page');
 const guidePage = document.getElementById('guide-page');
 const drawPage = document.getElementById('draw-page');
+const loadingScreen = document.getElementById('loading-screen');
+const cameraError = document.getElementById('camera-error');
+const errorMessage = document.getElementById('error-message');
+const loaderContent = document.querySelector('.loader-content');
 
 let appStarted = false;
+let cameraInitTimeout = null;
+let cameraStarted = false;
 
 function startApp() {
     homePage.classList.add('hidden');
     guidePage.classList.add('hidden');
     drawPage.classList.remove('hidden');
+    
+    // Reset loading state
+    loaderContent.classList.remove('hidden');
+    cameraError.classList.add('hidden');
+    
     if (!appStarted) {
         appStarted = true;
         initHandTracking();
+    } else if (!cameraStarted) {
+        // Retry logic: if app started but camera failed, try restart
+        initHandTracking();
     }
 }
+
 
 function showGuide() {
     homePage.classList.add('hidden');
@@ -109,8 +124,10 @@ function toggleTheme() {
 const videoElement = document.getElementById('input_video');
 const canvasElement = document.getElementById('output_canvas');
 const canvasCtx = canvasElement.getContext('2d');
-const loadingScreen = document.getElementById('loading-screen');
 const gestureIndicator = document.getElementById('gesture-indicator');
+
+let lastCameraFrameTime = 0;
+
 
 let drawings = [];
 let currentPath = null;
@@ -492,9 +509,14 @@ function recognizeAndRefineShape(path) {
 
 // ===== MAIN RESULTS CALLBACK =====
 function onResults(results) {
-    if (loadingScreen.style.display !== 'none') loadingScreen.style.display = 'none';
-
+    if (!cameraStarted) {
+        cameraStarted = true;
+        if (cameraInitTimeout) clearTimeout(cameraInitTimeout);
+        loadingScreen.style.display = 'none';
+    }
+    
     animTick++;
+
 
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -796,6 +818,10 @@ function drawNeonSkeleton(landmarks) {
 
 // ===== INIT HAND TRACKING =====
 function initHandTracking() {
+    // Show loader
+    loaderContent.classList.remove('hidden');
+    cameraError.classList.add('hidden');
+
     const hands = new Hands({
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
     });
@@ -816,8 +842,35 @@ function initHandTracking() {
         width: 1280,
         height: 720
     });
-    camera.start();
+
+    // Timeout if camera doesn't start
+    cameraInitTimeout = setTimeout(() => {
+        if (!cameraStarted) {
+            handleCameraError("Camera took too long to start. Please check your permissions!");
+        }
+    }, 10000);
+
+    camera.start().catch(err => {
+        handleCameraError(err.message || "Failed to start camera.");
+    });
 }
+
+function handleCameraError(msg) {
+    console.error("Camera Error:", msg);
+    if (cameraInitTimeout) clearTimeout(cameraInitTimeout);
+    
+    loaderContent.classList.add('hidden');
+    cameraError.classList.remove('hidden');
+    
+    if (msg.includes("NotReadableError") || msg.includes("Device in use")) {
+        errorMessage.textContent = "Your camera is already in use by another app or tab! Please close it and try again.";
+    } else if (msg.includes("Permission") || msg.includes("NotAllowed")) {
+        errorMessage.textContent = "Camera permission was denied. Please allow camera access in your browser settings!";
+    } else {
+        errorMessage.textContent = msg;
+    }
+}
+
 
 // ===== EVENT LISTENERS =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -832,5 +885,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-theme')?.addEventListener('click', toggleTheme);
     document.getElementById('btn-clear')?.addEventListener('click', clearAllDrawings);
     document.getElementById('btn-undo')?.addEventListener('click', undoDrawing);
+
+    // Camera Retry
+    document.getElementById('btn-camera-retry')?.addEventListener('click', () => {
+        initHandTracking();
+    });
 });
+
 

@@ -100,12 +100,23 @@
     <!-- ===== DRAWING PAGE ===== -->
     <div id="draw-page" class="hidden">
         <div id="loading-screen">
-            <div class="loader-ring">
-                <div class="loader-dot"></div>
-                <div class="loader-dot"></div>
-                <div class="loader-dot"></div>
+            <div class="loader-content">
+                <div class="loader-ring">
+                    <div class="loader-dot"></div>
+                    <div class="loader-dot"></div>
+                    <div class="loader-dot"></div>
+                </div>
+                <p class="loading-text">Starting camera magic...</p>
             </div>
-            <p class="loading-text">Starting camera magic...</p>
+            <div id="camera-error" class="hidden">
+                <div class="error-icon">⚠️</div>
+                <h3 class="error-title">Oops! Camera Issue</h3>
+                <p id="error-message" class="error-text">We couldn't reach your camera. Please check if it's already in use by another app!</p>
+                <button class="btn-primary" id="btn-camera-retry">
+                    <span class="btn-emoji">🔄</span>
+                    Try Again
+                </button>
+            </div>
         </div>
 
         <video id="input_video" playsinline></video>
